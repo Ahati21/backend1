@@ -1,36 +1,44 @@
-const db = require("../config/db");
+const db = require("../config/db"); // one folder up from models/
+
+const Task = {};
 
 // Get all tasks
-exports.getAllTasks = (callback) => {
-  db.query("SELECT * FROM tasks", callback);
+Task.getAllTasks = (callback) => {
+  const sql = "SELECT * FROM tasks ORDER BY id DESC";
+  db.query(sql, callback);
 };
 
-// Get single task by ID
-exports.getTaskById = (id, callback) => {
-  db.query("SELECT * FROM tasks WHERE id = ?", [id], callback);
+// Get task by ID
+Task.getTaskById = (id, callback) => {
+  const sql = "SELECT * FROM tasks WHERE id = ?";
+  db.query(sql, [id], callback);
 };
 
-// Create new task
-exports.createTask = (taskData, callback) => {
-  const { title, description, due_date } = taskData;
-  db.query(
-    "INSERT INTO tasks (title, description, due_date) VALUES (?, ?, ?)",
-    [title, description, due_date],
-    callback
-  );
+// Create task
+Task.createTask = (
+  { title, description, due_date = null, done = false },
+  callback
+) => {
+  const sql =
+    "INSERT INTO tasks (title, description, due_date, done) VALUES (?, ?, ?, ?)";
+  db.query(sql, [title, description, due_date, done], callback);
 };
 
 // Update task
-exports.updateTask = (id, taskData, callback) => {
-  const { title, description, due_date } = taskData;
-  db.query(
-    "UPDATE tasks SET title=?, description=?, due_date=? WHERE id=?",
-    [title, description, due_date, id],
-    callback
-  );
+Task.updateTask = (
+  id,
+  { title, description, due_date = null, done = false },
+  callback
+) => {
+  const sql =
+    "UPDATE tasks SET title = ?, description = ?, due_date = ?, done = ? WHERE id = ?";
+  db.query(sql, [title, description, due_date, done, id], callback);
 };
 
 // Delete task
-exports.deleteTask = (id, callback) => {
-  db.query("DELETE FROM tasks WHERE id=?", [id], callback);
+Task.deleteTask = (id, callback) => {
+  const sql = "DELETE FROM tasks WHERE id = ?";
+  db.query(sql, [id], callback);
 };
+
+module.exports = Task;
